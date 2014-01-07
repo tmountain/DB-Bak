@@ -1,0 +1,20 @@
+#!/bin/bash
+
+export DB_BACKUP="/home/user/mongobak"
+
+if [ ! -d "$DB_BACKUP/01" ]; then
+    mkdir -p "$DB_BACKUP/01"
+fi
+
+if [ ! -d "$DB_BACKUP/02" ]; then
+    mkdir "$DB_BACKUP/02"
+fi
+
+if [ ! -d "$DB_BACKUP/03" ]; then
+    mkdir "$DB_BACKUP/03"
+fi
+
+rm -rf "$DB_BACKUP/03"
+mv "$DB_BACKUP/02 $DB_BACKUP/03"
+mv "$DB_BACKUP/01 $DB_BACKUP/02"
+mkdir "$DB_BACKUP/01"

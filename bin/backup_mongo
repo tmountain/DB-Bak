@@ -1,0 +1,22 @@
+#!/bin/bash
+
+DB_DIR="/home/user/mongobak"
+IS_MASTER=$(echo "db.isMaster()" | mongo | grep ismaster | grep true)
+
+# do not run backups on the master
+if [ -n "$IS_MASTER" ]; then
+    exit
+fi
+
+if [ ! -d "$DB_DIR" ]; then
+    mkdir "$DB_DIR"
+fi
+
+if [ -d "/tmp/dump" ]; then
+    cd /tmp
+    mongodump
+    tar -cjvf "$DB_DIR/mongo_backup.tar.bz2" /tmp/dump
+    ssh user@host.example.com /home/user/bin/rotate_mongo_backups
+    scp "$DB_DIR/mongo_backup.tar.bz2" "user@host.example.com:$DB_DIR/01"
+    rm -rf /tmp/dump
+fi

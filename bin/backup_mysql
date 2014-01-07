@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# modify the following to suit your environment
+export DB_DIR="/home/user/mysqlbak"
+export DB_USER="root"
+export DB_PASSWD="secret"
+
+if [ ! -d "$DB_DIR" ]; then
+    mkdir "$DB_DIR"
+fi
+
+# it's not secure to show the password on the command-line on an untrusted server
+mysqldump --user=$DB_USER --password=$DB_PASSWD --all-databases | bzip2 > "$DB_DIR/mysql_backup.bz2"
+
+if [ -a "$DB_DIR/mysql_backup.bz2" ]; then
+    ssh user@host.example.com /home/user/bin/rotate_mysql_backups
+    scp "$DB_DIR/mysql_backup.bz2" "user@host.example.com:$DB_DIR/01"
+    rm -f "$DB_DIR/mysql_backup.bz2"
+fi
